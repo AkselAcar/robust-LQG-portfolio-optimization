@@ -1,3 +1,5 @@
+# Code that computes the LQG controller
+
 import numpy as np
 import matplotlib.pyplot as plt
 

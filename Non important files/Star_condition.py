@@ -1,3 +1,5 @@
+# Test if the * condition holds using the given formulation and for which parameters
+
 import numpy as np
 
 def check_star_condition(horizon, lambda_param, sigma, eta, gamma_i, omega_p, omega_i, beta_i):

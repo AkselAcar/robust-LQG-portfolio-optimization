@@ -1,3 +1,5 @@
+# LQR Trading Strategy Simulation - From the paper by abeille "LQG Porfolio Optimization"
+
 import numpy as np
 import matplotlib.pyplot as plt
 

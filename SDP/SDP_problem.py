@@ -1,3 +1,5 @@
+# SDP problem to compute robust covariance terms from the paper DRO LQG by Daniel Kuhn.
+
 import cvxpy as cp
 import numpy as np
 import scipy as sp

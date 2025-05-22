@@ -1,3 +1,5 @@
+# SDP to find the robust covarince terms in one dimension 
+
 import cvxpy as cp
 import numpy as np
 

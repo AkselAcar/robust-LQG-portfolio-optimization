@@ -1,3 +1,5 @@
+# To check if the finite-horizon Riccati difference equation is satisfied. So we verified that the file was computed correctly.
+
 import numpy as np
 
 def solve_finite_horizon_riccati(horizon, lambda_param, sigma, eta, gamma_i, omega_p, omega_i, beta_i):

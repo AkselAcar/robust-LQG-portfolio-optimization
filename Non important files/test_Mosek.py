@@ -1,3 +1,6 @@
+# To learn more about MOSEK and how to write Python code for it. 
+
+
 # import cvxpy as cp
 # import numpy as np
 

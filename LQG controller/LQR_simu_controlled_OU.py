@@ -1,3 +1,6 @@
+# LQR Trading Strategy Simulation
+# This code simulates a trading strategy using Linear Quadratic Regulator (LQR) control. 
+# Also compares the market evolution with the mean reversion and with the controlled mean reversion.
 """ import numpy as np
 import matplotlib.pyplot as plt
 

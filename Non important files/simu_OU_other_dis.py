@@ -1,3 +1,5 @@
+# Old version of the code for simulating a portfolio with LQR control
+
 import numpy as np
 import matplotlib.pyplot as plt
 
