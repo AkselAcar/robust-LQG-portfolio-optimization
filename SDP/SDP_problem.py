@@ -11,7 +11,7 @@ p = 1 #dimension of the outputs y
 
 # --- Simulation Parameters ---
 time_horizon = 30                # time horizon
-dt = 1                         # time step
+dt = 1                           # time step
 T = int(time_horizon / dt)       # number of steps
 
 # --- Model Parameters ---
@@ -23,9 +23,6 @@ sigma_x0 = 2.0       # noise strength for the initial condition
 
 
 np.random.seed(0)
-# Random system matrices for now (to be replaced with real data)
-# A = np.eye(n) 
-# B = 0.1*np.random.randn(n, m)
 
 # Model parameters for the OU process
 A = np.array([[1 - theta * dt]])  
@@ -44,16 +41,16 @@ Ew_list = [cp.Variable((n, n),PSD=True) for _ in range(T)]
 Ev_list = [cp.Variable((p, p),PSD=True) for _ in range(T)]
 
 
-# Data definition (to change)
+# Data definition 
 X0_hat = sigma_x0**2 * np.eye(n)
 W_hat_list = [sigma_w**2 * dt * np.eye(n) for _ in range(T)] # Variance matrices for W
 V_hat_list = [sigma_v**2 * np.eye(p) for _ in range(T)] # Variance matrices for V
-rho_x0 = 1.0
-rho_w = 1.0
-rho_v = 1.0
+rho_x0 = 1.0    # Wasserstein radius for X0
+rho_w = 1.0     # Wasserstein radius for W
+rho_v = 1.0     # Wasserstein radius for V
 
 
-Q = np.eye(n*(T+1))  # Had t oadjust the dimensions of Q to match the G matrix but not convinced. 
+Q = np.eye(n*(T+1))   
 R = np.eye(p*T) 
 
 # Build G matrix (n(T+1) x n(T+1)) 
