@@ -2,6 +2,14 @@ import cvxpy as cp
 import numpy as np
 import scipy as sp
 
+
+def solve_sdp(A, B, C, X0_hat, W_hat, V_hat, dt, T, rho_x0=1.0, rho_w=1.0, rho_v=1.0, solver=cp.MOSEK):
+
+    # Nominal covariances (already matrices)
+    # W_hat_list and V_hat_list should be lists of matrices
+    W_hat_list = [W_hat for _ in range(T)]  # Process noise covariances
+    V_hat_list = [V_hat for _ in range(T)]  # Measurement noise covariances
+
 def solve_sdp(
     A,
     B,

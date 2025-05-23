@@ -22,28 +22,26 @@ def compute_lqr_gain(A, B, Q, R):
     P = solve_discrete_are(A, B, Q, R)
     K = np.linalg.inv(R + B.T @ P @ B) @ (B.T @ P @ A)
     return K, P
-
-def compute_kalman_gain(A, C, Qw, Rv, Sigma_init=None, iterations=1000, tol=1e-8):
+    
+def finite_horizon_kalman_gains(A, C, W, V, Sigma0, T):
     """
-    Computes the steady-state Kalman gain L for the system:
+    Computes finite-horizon Kalman gains using the DRE as shown in the provided slide.
 
-    x_{k+1} = A x_k + w_k
-    y_k = C x_k + v_k
-
-    Returns:
-        L: Kalman gain (n x p)
-        Sigma: Steady-state error covariance
     """
     n = A.shape[0]
-    Sigma = Sigma_init if Sigma_init is not None else 1e-3 * np.eye(n)
+    Sigma = Sigma0.copy()
 
-    for _ in range(iterations):
-        Sigma_pred = A @ Sigma @ A.T + Qw
-        S = C @ Sigma_pred @ C.T + Rv
-        L = Sigma_pred @ C.T @ np.linalg.inv(S)
-        Sigma_new = (np.eye(n) - L @ C) @ Sigma_pred
-        if np.linalg.norm(Sigma_new - Sigma) < tol:
-            break
-        Sigma = Sigma_new
+    L_list = []
+    Sigma_list = [Sigma0]
 
-    return L, Sigma
+    for _ in range(T):
+        # Compute Kalman gain from DRE prediction
+        S = C @ Sigma @ C.T + V
+        L = A @ Sigma @ C.T @ np.linalg.inv(S)
+        L_list.append(L)
+
+        # DRE Update for Σ_{k+1|k}
+        Sigma = A @ Sigma @ A.T + W - A @ Sigma @ C.T @ np.linalg.inv(S) @ C @ Sigma @ A.T
+        Sigma_list.append(Sigma)
+
+    return L_list, Sigma_list
