@@ -3,19 +3,19 @@ import numpy as np
 import scipy as sp
 
 
-def solve_sdp(A, B, C, X0_hat, W_hat, V_hat, dt, T, rho_x0=1.0, rho_w=1.0, rho_v=1.0, solver=cp.MOSEK):
+# def solve_sdp(A, B, C, X0_hat, W_hat, V_hat, dt, T, rho_x0=1.0, rho_w=1.0, rho_v=1.0, solver=cp.MOSEK):
 
     # Nominal covariances (already matrices)
     # W_hat_list and V_hat_list should be lists of matrices
-    W_hat_list = [W_hat for _ in range(T)]  # Process noise covariances
-    V_hat_list = [V_hat for _ in range(T)]  # Measurement noise covariances
+    # W_hat_list = [W_hat for _ in range(T)]  # Process noise covariances
+    # V_hat_list = [V_hat for _ in range(T)]  # Measurement noise covariances
 
 def solve_sdp(
     A,
     B,
     C,
     sigma_x0,
-    sigma_w,
+    sigma_w, # Change the notations to be the same with the main so sigma_ hat 
     sigma_v,
     dt,
     T,
@@ -27,6 +27,11 @@ def solve_sdp(
     n = A.shape[0]
     m = B.shape[1]
     p = C.shape[0]
+
+
+    # W_hat_list = [W_hat for _ in range(T)]  # Process noise covariances
+    # V_hat_list = [V_hat for _ in range(T)]  # Measurement noise covariances
+
 
     # Variance matrices
     X0_hat = sigma_x0**2 * np.eye(n)
@@ -67,7 +72,7 @@ def solve_sdp(
     C_big = np.block(C_blocks)
     D = C_big @ G
 
-    # --- W and V Block Matrices ---
+    # --- W and V Block diagonal Matrices ---
     W_blocks = [X0] + W_list
     W = cp.bmat([
         [W_blocks[i] if i == j else np.zeros((n, n)) for j in range(T + 1)]
