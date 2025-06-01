@@ -1,17 +1,3 @@
-# def compute_lqr_gain(a, b, Q, R, iterations=1000):
-#     P = Q
-#     for _ in range(iterations):
-#         P = Q + a**2 * P - (a * b * P)**2 / (R + b**2 * P)
-#     K = (a * b * P) / (R + b**2 * P)
-#     return K
-
-# def compute_kalman_gain(a, c, Qw, Rv, Sigma_init, iterations=1000):
-#     Sigma = Sigma_init
-#     for _ in range(iterations):
-#         Sigma = a**2 * Sigma + Qw - (a * Sigma * c)**2 / (c**2 * Sigma + Rv)
-#     L = a * Sigma * c / (c**2 * Sigma + Rv)
-#     return L
-
 import numpy as np
 from scipy.linalg import solve_discrete_are
 
