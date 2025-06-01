@@ -3,40 +3,19 @@ import numpy as np
 import scipy as sp
 
 
-# def solve_sdp(A, B, C, X0_hat, W_hat, V_hat, dt, T, rho_x0=1.0, rho_w=1.0, rho_v=1.0, solver=cp.MOSEK):
+def solve_sdp(A, B, C, X0_hat, W_hat, V_hat, dt, T, rho_x0=1.0, rho_w=1.0, rho_v=1.0, solver=cp.MOSEK):
 
-    # Nominal covariances (already matrices)
-    # W_hat_list and V_hat_list should be lists of matrices
-    # W_hat_list = [W_hat for _ in range(T)]  # Process noise covariances
-    # V_hat_list = [V_hat for _ in range(T)]  # Measurement noise covariances
-
-def solve_sdp(
-    A,
-    B,
-    C,
-    sigma_x0,
-    sigma_w, # Change the notations to be the same with the main so sigma_ hat 
-    sigma_v,
-    dt,
-    T,
-    rho_x0=1.0,
-    rho_w=1.0,
-    rho_v=1.0,
-    solver=cp.MOSEK
-):
     n = A.shape[0]
     m = B.shape[1]
     p = C.shape[0]
 
-
     # W_hat_list = [W_hat for _ in range(T)]  # Process noise covariances
     # V_hat_list = [V_hat for _ in range(T)]  # Measurement noise covariances
 
-
     # Variance matrices
-    X0_hat = sigma_x0**2 * np.eye(n)
-    W_hat_list = [sigma_w**2 * dt * np.eye(n) for _ in range(T)]
-    V_hat_list = [sigma_v**2 * np.eye(p) for _ in range(T)]
+    W_hat_list = [W_hat for _ in range(T)]  # Process noise covariances
+    V_hat_list = [V_hat for _ in range(T)]  # Measurement noise covariances
+
 
     # --- Variables ---
     X0 = cp.Variable((n, n), PSD=True)
