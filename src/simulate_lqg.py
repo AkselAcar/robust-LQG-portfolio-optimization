@@ -57,7 +57,7 @@
 
 import numpy as np
 
-def simulate_lqg(T, A, B, C, mu, K, L_list, Qw, Rv, x0):
+def simulate_lqg(T, A, B, C, mu, K_list, L_list, Qw, Rv, x0):
     n = A.shape[0]
     m = B.shape[1]
     p = C.shape[0]
@@ -73,20 +73,22 @@ def simulate_lqg(T, A, B, C, mu, K, L_list, Qw, Rv, x0):
     z_hat[0] = z[0] + np.random.multivariate_normal(np.zeros(p), Rv)
 
     for k in range(1, T):
-        u[k] = -K @ z_hat[k - 1]
+        K = K_list[k - 1]  # Time-varying LQR gain (already reversed in the LQR computation)
+        L = L_list[k]      # Time-varying Kalman gain
+
+        u[k] = -K @ z_hat[k - 1] # We took the control action based on the previous estimated states as K is K[k-1]
         w_k = np.random.multivariate_normal(np.zeros(n), Qw)
         z[k] = A @ z[k - 1] + B @ u[k] + w_k
         x[k] = mu.flatten() - z[k]
         v_k = np.random.multivariate_normal(np.zeros(p), Rv)
         y[k] = C @ z[k] + v_k
         z_pred = A @ z_hat[k - 1] + B @ u[k]
-        L = L_list[k]  # use time-varying Kalman gain
         z_hat[k] = z_pred + L @ (y[k] - C @ z_pred)
 
-    return x, u
+    return x, u 
 
 
-def simulate_robust_lqg(T, A, B, C, K, L_list, x0, Qw_rob, Rv_rob, mu):
+def simulate_robust_lqg(T, A, B, C, K_list, L_list, x0, Qw_rob, Rv_rob, mu):
     n = A.shape[0]
     m = B.shape[1]
     p = C.shape[0]
@@ -101,6 +103,9 @@ def simulate_robust_lqg(T, A, B, C, K, L_list, x0, Qw_rob, Rv_rob, mu):
     z_hat[0] = z[0] + np.random.multivariate_normal(np.zeros(p), Rv_rob)
 
     for k in range(1, T):
+        K = K_list[k - 1]
+        L = L_list[k]
+
         u[k] = -K @ z_hat[k - 1]
         w_k = np.random.multivariate_normal(np.zeros(n), Qw_rob)
         z[k] = A @ z[k - 1] + B @ u[k] + w_k
@@ -108,7 +113,7 @@ def simulate_robust_lqg(T, A, B, C, K, L_list, x0, Qw_rob, Rv_rob, mu):
         v_k = np.random.multivariate_normal(np.zeros(p), Rv_rob)
         y_k = C @ z[k] + v_k
         z_pred = A @ z_hat[k - 1] + B @ u[k]
-        L = L_list[k]  # use robust Kalman gain
         z_hat[k] = z_pred + L @ (y_k - C @ z_pred)
 
     return x, u
+

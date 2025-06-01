@@ -1,13 +1,29 @@
 import numpy as np
 from scipy.linalg import solve_discrete_are
 
-def compute_lqr_gain(A, B, Q, R): # Change into finite-horizon LQR
+def compute_finite_horizon_lqr_gains(A, B, Q, R, T):
     """
-    Computes the LQR gain matrix using the discrete-time algebraic Riccati equation.
+    Computes a list of finite-horizon LQR gains using backward Riccati recursion.
+
+    Returns:
+        K_list: List of LQR gains [K_0, ..., K_{T-1}]
     """
-    P = solve_discrete_are(A, B, Q, R)
-    K = np.linalg.inv(R + B.T @ P @ B) @ (B.T @ P @ A)
-    return K, P
+    n = A.shape[0]
+    m = B.shape[1]
+
+    P = Q  # Terminal cost
+    P_list = [None] * (T + 1)
+    K_list = [None] * T
+    P_list[T] = P
+
+    for t in reversed(range(T)):
+        K = np.linalg.inv(R + B.T @ P @ B) @ (B.T @ P @ A)
+        K_list[t] = K
+        P = Q + A.T @ P @ A - A.T @ P @ B @ K
+        P_list[t] = P
+
+    return K_list
+
     
 def finite_horizon_kalman_gains(A, C, W, V, Sigma0, T):
     """
