@@ -69,7 +69,7 @@ def solve_sdp(A, B, C, X0_hat, W_hat, V_hat, dt, T, rho_x0=1.0, rho_w=1.0, rho_v
     ])
 
     Q_mat = np.eye(n * (T + 1))
-    R_mat = np.eye(p * T)
+    R_mat = np.eye(m * T)  # instead of p * T
 
     # --- Objective ---
     objective = cp.Maximize(
