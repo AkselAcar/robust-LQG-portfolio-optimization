@@ -19,7 +19,7 @@ theta = 0.15          # mean-reversion rate
 mu = 130.0            # target portfolio value
 sigma_w = 2.0         # noise strength for the system
 sigma_v = 2.0         # noise strength for the observation
-sigma_x0 = 2.0       # noise strength for the initial condition
+sigma_x0 = 2.0        # noise strength for the initial condition
 
 
 np.random.seed(0)

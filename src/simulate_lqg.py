@@ -57,7 +57,7 @@
 
 import numpy as np
 
-def simulate_lqg(T, A, B, C, mu, K_list, L_list, Qw, Rv, x0):
+def simulate_lqg(T, A, B, C, mu, K_list, L_list,x0, Qw, Rv):
     n = A.shape[0]
     m = B.shape[1]
     p = C.shape[0]
@@ -88,7 +88,7 @@ def simulate_lqg(T, A, B, C, mu, K_list, L_list, Qw, Rv, x0):
     return x, u 
 
 
-def simulate_robust_lqg(T, A, B, C, K_list, L_list, x0, Qw_rob, Rv_rob, mu):
+def simulate_robust_lqg(T, A, B, C, mu, K_list, L_list, x0, Qw_rob, Rv_rob,):
     n = A.shape[0]
     m = B.shape[1]
     p = C.shape[0]
