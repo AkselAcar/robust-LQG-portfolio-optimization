@@ -9,9 +9,6 @@ def solve_sdp(A, B, C, X0_hat, W_hat, V_hat, dt, T, rho_x0=1.0, rho_w=1.0, rho_v
     m = B.shape[1]
     p = C.shape[0]
 
-    # W_hat_list = [W_hat for _ in range(T)]  # Process noise covariances
-    # V_hat_list = [V_hat for _ in range(T)]  # Measurement noise covariances
-
     # Variance matrices
     W_hat_list = [W_hat for _ in range(T)]  # Process noise covariances
     V_hat_list = [V_hat for _ in range(T)]  # Measurement noise covariances
@@ -120,6 +117,6 @@ def solve_sdp(A, B, C, X0_hat, W_hat, V_hat, dt, T, rho_x0=1.0, rho_w=1.0, rho_v
         "status": problem.status,
         "optimal_value": problem.value,
         "X0": X0.value,
-        "W0": W_list[0].value,
-        "V0": V_list[0].value
+        "W0": [W.value for W in W_list],
+        "V0": [V.value for V in V_list]
     }

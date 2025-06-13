@@ -24,26 +24,31 @@ def compute_finite_horizon_lqr_gains(A, B, Q, R, T):
 
     return K_list
 
+
+def finite_horizon_kalman_gains(A, C, W_list, V_list, Sigma0, T):
+    """
+    Computes finite-horizon Kalman gains with time-varying covariances.
     
-def finite_horizon_kalman_gains(A, C, W, V, Sigma0, T):
+    Returns:
+        L_list: Kalman gains for each time step
     """
-    Computes finite-horizon Kalman gains using the DRE as shown in the provided slide.
-
-    """
-    # n = A.shape[0]
+    n = A.shape[0]
+    p = C.shape[0]
     Sigma = Sigma0.copy()
-
+    
     L_list = []
-    Sigma_list = [Sigma0]
 
-    for _ in range(T):
-        # Compute Kalman gain from DRE prediction
+    for k in range(T):
+        # Get current time-step covariances
+        W = W_list[k] if k < len(W_list) else W_list[-1] # Not necessary but for safety, if W_list is shorter than T use the last element
+        V = V_list[k] if k < len(V_list) else V_list[-1]
+        
+        # Compute Kalman gain
         S = C @ Sigma @ C.T + V
         L = A @ Sigma @ C.T @ np.linalg.inv(S)
         L_list.append(L)
-
-        # DRE Update for Σ_{k+1|k}
+        
+        # Update covariance
         Sigma = A @ Sigma @ A.T + W - A @ Sigma @ C.T @ np.linalg.inv(S) @ C @ Sigma @ A.T
-        Sigma_list.append(Sigma)
 
-    return L_list, Sigma_list
+    return L_list
