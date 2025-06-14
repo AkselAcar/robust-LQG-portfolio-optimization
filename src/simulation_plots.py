@@ -197,16 +197,16 @@ def simulate_and_plot_average_trajectories(
 ):
     n = A.shape[0]
     # Arrays to store cost trajectories
-    cost_nom_all = np.zeros((N_runs, T))
-    cost_rob_all = np.zeros((N_runs, T))
+    cost_nom_all = np.zeros((N_runs, T ))
+    cost_rob_all = np.zeros((N_runs, T ))
     
     # Arrays to store total costs per run
     total_cost_nom = np.zeros(N_runs)
     total_cost_rob = np.zeros(N_runs)
     
     # Arrays for states
-    x_nom_all = np.zeros((N_runs, T, n))
-    x_rob_all = np.zeros((N_runs, T, n))
+    x_nom_all = np.zeros((N_runs, T + 1, n))
+    x_rob_all = np.zeros((N_runs, T + 1, n))
 
     for i in range(N_runs):
         x0 = np.random.multivariate_normal(initial_point.flatten(), X0_robust).reshape(-1, 1)
@@ -240,7 +240,8 @@ def simulate_and_plot_average_trajectories(
     mean_total_cost_nom = total_cost_nom.mean()  # Scalar average total cost
     mean_total_cost_rob = total_cost_rob.mean()
 
-    time = np.arange(T)
+    time_state = np.arange(T + 1)  # For state trajectories (0 to T)
+    time_cost = np.arange(T)        # For cost trajectories (0 to T-1)
 
     # --- Plot 1: State Trajectories Comparison ---
     plt.figure(figsize=(10, 8))
@@ -248,13 +249,13 @@ def simulate_and_plot_average_trajectories(
     # State trajectories
     plt.subplot(2, 1, 1)
     for dim in range(n):
-        plt.plot(time, x_nom_mean[:, dim], 'b--', label=f"Nominal - State {dim+1}")
-        plt.fill_between(time,
+        plt.plot(time_state, x_nom_mean[:, dim], 'b--', label=f"Nominal - State {dim+1}")
+        plt.fill_between(time_state,
                          x_nom_mean[:, dim] - x_nom_std[:, dim],
                          x_nom_mean[:, dim] + x_nom_std[:, dim],
                          alpha=0.15, color='blue')
-        plt.plot(time, x_rob_mean[:, dim], 'r-', label=f"Robust - State {dim+1}")
-        plt.fill_between(time,
+        plt.plot(time_state, x_rob_mean[:, dim], 'r-', label=f"Robust - State {dim+1}")
+        plt.fill_between(time_state,
                          x_rob_mean[:, dim] - x_rob_std[:, dim],
                          x_rob_mean[:, dim] + x_rob_std[:, dim],
                          alpha=0.15, color='red')
@@ -268,13 +269,13 @@ def simulate_and_plot_average_trajectories(
     
     # Instantaneous cost comparison
     plt.subplot(2, 1, 2)
-    plt.plot(time, mean_cost_nom_per_timestep, 'b--', label='Nominal Cost')
-    plt.fill_between(time, 
+    plt.plot(time_cost, mean_cost_nom_per_timestep, 'b--', label='Nominal Cost')
+    plt.fill_between(time_cost, 
                      mean_cost_nom_per_timestep - std_cost_nom_per_timestep, 
                      mean_cost_nom_per_timestep + std_cost_nom_per_timestep, 
                      alpha=0.2, color='blue')
-    plt.plot(time, mean_cost_rob_per_timestep, 'r-', label='Robust Cost')
-    plt.fill_between(time, 
+    plt.plot(time_cost, mean_cost_rob_per_timestep, 'r-', label='Robust Cost')
+    plt.fill_between(time_cost, 
                      mean_cost_rob_per_timestep - std_cost_rob_per_timestep, 
                      mean_cost_rob_per_timestep + std_cost_rob_per_timestep, 
                      alpha=0.2, color='red')
@@ -289,8 +290,8 @@ def simulate_and_plot_average_trajectories(
 
     # --- Plot 2: Cumulative Costs ---
     plt.figure(figsize=(10, 5))
-    plt.plot(time, np.cumsum(mean_cost_nom_per_timestep), 'b--', label='Nominal Cumulative Cost')
-    plt.plot(time, np.cumsum(mean_cost_rob_per_timestep), 'r-', label='Robust Cumulative Cost')
+    plt.plot(time_cost, np.cumsum(mean_cost_nom_per_timestep), 'b--', label='Nominal Cumulative Cost')
+    plt.plot(time_cost, np.cumsum(mean_cost_rob_per_timestep), 'r-', label='Robust Cumulative Cost')
     plt.title("Cumulative Cost Comparison")
     plt.xlabel("Time step")
     plt.ylabel("Cumulative Cost")
