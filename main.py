@@ -128,7 +128,8 @@ noise_factors, avg_nom, avg_rob = analyze_noise_sensitivity(
     Q=Q,
     R=R,
     noise_factors=np.linspace(0, 1.25, 11),
-    N_runs=25
+    N_runs=25,
+    rho_v=sdp_params["rho_v"]
 )
 
 
