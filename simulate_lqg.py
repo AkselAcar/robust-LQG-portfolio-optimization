@@ -18,25 +18,6 @@ def simulate_lqg(T, A, B, C, mu, K_list, L_list, x0, W_list, V_list, Q, R):
     z[0] = (mu - x0).flatten()
     z_hat[0] = z[0] + np.random.multivariate_normal(np.zeros(p), V_list[0])
     
-    # # Initial state cost - z[0]^T Q z[0]
-    # cost_vector[0] += z[0].T @ Q @ z[0]
-
-    # for k in range(1, T):
-    #     K = K_list[k - 1]
-    #     L = L_list[k]
-    #     w_k = np.random.multivariate_normal(np.zeros(n), W_list[k])
-    #     v_k = np.random.multivariate_normal(np.zeros(p), V_list[k])
-
-    #     u[k] = -K @ z_hat[k - 1]  # ??? change it to same k 
-    #     z[k] = A @ z[k - 1] + B @ u[k] + w_k
-    #     x[k] = mu.flatten() - z[k]
-    #     y[k] = C @ z[k] + v_k
-    #     z_pred = A @ z_hat[k - 1] + B @ u[k]
-    #     z_hat[k] = z_pred + L @ (y[k] - C @ z_pred)
-        
-    #     # cost at each timestep - z[k]^T Q z[k] + u[k]^T R u[k]
-    #     cost_vector[k] += z[k].T @ Q @ z[k] + u[k].T @ R @ u[k]
-    
     for k in range(T):
         K = K_list[k]
         L = L_list[k]
@@ -78,28 +59,6 @@ def simulate_robust_lqg(T, A, B, C, mu, K_list, L_list, x0_rob, W_list, V_list, 
     x[0] = x0_rob.flatten()
     z[0] = (mu - x0_rob).flatten()
     z_hat[0] = z[0] + np.random.multivariate_normal(np.zeros(p), V_list[0])
-
-
-
-    # # Initial state cost - z[0]^T Q z[0]
-    # cost_vector[0] += z[0].T @ Q @ z[0]
-
-    # for k in range(1, T):
-    #     K = K_list[k - 1]
-    #     L = L_list[k]
-    #     w_k = np.random.multivariate_normal(np.zeros(n), W_list[k])
-    #     v_k = np.random.multivariate_normal(np.zeros(p), V_list[k])
-
-    #     u[k] = -K @ z_hat[k - 1]  # ??? change it to same k 
-    #     z[k] = A @ z[k - 1] + B @ u[k] + w_k
-    #     x[k] = mu.flatten() - z[k]
-    #     y[k] = C @ z[k] + v_k
-    #     z_pred = A @ z_hat[k - 1] + B @ u[k]
-    #     z_hat[k] = z_pred + L @ (y[k] - C @ z_pred)
-        
-    #     # cost at each timestep - z[k]^T Q z[k] + u[k]^T R u[k]
-    #     cost_vector[k] += z[k].T @ Q @ z[k] + u[k].T @ R @ u[k]
-    
     
     for k in range(T):
         K = K_list[k]

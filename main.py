@@ -18,7 +18,7 @@ n = 1  # Number of states, to chnage if needed !!
 m = 1  # Number of control inputs
 
 # --- System Matrices ---
-theta = np.diag([0.01])        # mean reversion coefficient for each state, to adapt if needed !!
+theta = np.diag([0.1])        # mean reversion coefficient for each state, to adapt if needed !!
 A = np.eye(n) - theta * dt     # Dynamics matrix
 B = -dt * np.ones((n, m))      # Control input matrix
 C = np.eye(n)                  # Measurement matrix
@@ -49,7 +49,7 @@ sdp_params = {
     "T": T,
     "rho_x0": 0.0,
     "rho_w": 0.0,
-    "rho_v": 7.0
+    "rho_v": 10.0
 }
 
 # --- Compute or load SDP results ---
@@ -70,9 +70,9 @@ else:
     V0_robust = saved_data["V0_robust"]
     print(f"Loaded SDP solution computed with parameters: {saved_data['params']}")
 
-print(f"\nX0_nominal:\n{X0_hat}")
-print(f"W0_nominal:\n{W_hat}")
-print(f"V0_nominal:\n{V_hat}")
+# print("X0_hat eigenvalues:", np.linalg.eigvals(X0_hat))
+# print("W_hat eigenvalues:", np.linalg.eigvals(W_hat))
+# print("V_hat eigenvalues:", np.linalg.eigvals(V_hat))
 
 # --- Compute Nominal and Robust Gains ---
 K_list = compute_finite_horizon_lqr_gains(A, B, Q, R, T=T)
@@ -81,7 +81,7 @@ L_rob = finite_horizon_kalman_gains(A, C, W0_robust, V0_robust, X0_robust, T)
 
 # --- Simulation Parameters ---
 noise_factor = 0.95
-W_real = [noise_factor * W for W in W0_robust]
+W_real =  W0_robust
 V_real = [noise_factor * V for V in V0_robust]
 initial_point = 0.80 * mu
 N_runs = 100
