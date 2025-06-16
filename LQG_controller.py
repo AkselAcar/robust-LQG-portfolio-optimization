@@ -43,25 +43,15 @@ def finite_horizon_kalman_gains(A, C, W_list, V_list, Sigma0, T):
         W = W_list[k] if k < len(W_list) else W_list[-1] # Not necessary but for safety, if W_list is shorter than T use the last element
         V = V_list[k] if k < len(V_list) else V_list[-1]
         
+        print(f"printing matrices of finite_horizon_kalman_gains at step {k}:")
         # Compute Kalman gain
         S = C @ Sigma @ C.T + V
-        # Add diagnostics
-        cond_number = np.linalg.cond(S) # to check the ratio of the largest to smallest singular value
-        print(f"Step {k}: Condition number = {cond_number:.2e}")
-        print(f"Min eigenvalue = {np.min(np.linalg.eigvals(S)):.2e}") # to check if S is positive definite, 
-                                                                      # if close to zero or negative, it is not positive definite
-        
-        if cond_number > 1e10:
-            print("Warning: High condition number!")  # means numerical instability
-            print("S =", S)
-            print("V_k =", V)
-            print("C @ Sigma @ C.T =", C @ Sigma @ C.T)
-
-
+        print(f"Step {k}: V = {V}, Sigma = {Sigma}, C = {C}, S = {S}")
         L = A @ Sigma @ C.T @ np.linalg.inv(S)
         L_list.append(L)
         
         # Update covariance
         Sigma = A @ Sigma @ A.T + W - A @ Sigma @ C.T @ np.linalg.inv(S) @ C @ Sigma @ A.T
+        print(f"Step {k}: A = {A}, W = {W}, S = {S}, L = {L}, Sigma = {Sigma}\n")
 
     return L_list

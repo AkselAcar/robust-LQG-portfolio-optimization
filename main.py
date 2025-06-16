@@ -14,17 +14,17 @@ dt = 1.0   # Time step
 T = int(time_horizon / dt)  # Number of steps 
 
 # System dimensions
-n = 1  # Number of states, to chnage if needed !!
+n = 3  # Number of states, to chnage if needed !!
 m = 1  # Number of control inputs
 
 # --- System Matrices ---
-theta = np.diag([0.1])        # mean reversion coefficient for each state, to adapt if needed !!
+theta = np.diag([0.1,0.1,0.1])        # mean reversion coefficient for each state, to adapt if needed !!
 A = np.eye(n) - theta * dt     # Dynamics matrix
 B = -dt * np.ones((n, m))      # Control input matrix
 C = np.eye(n)                  # Measurement matrix
 
 # --- Initial State and Noise Covariances ---
-mu = np.array([[130.0]])             # To adapt if needed !! Multiple dimensions possible !
+mu = np.array([[130.0],[120.0],[140.0]])             # To adapt if needed !! Multiple dimensions possible !
 sigma_x0 = 2.0                       # Initial state uncertainty
 X0_hat = sigma_x0**2 * np.eye(n)     # Initial state covariance (n x n)
 sigma_w = 2.0                        # Process noise intensity
