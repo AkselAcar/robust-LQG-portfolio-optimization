@@ -111,26 +111,26 @@ print(f"Robustness Benefit: {avg_cost_nom - avg_cost_rob}")
 W_hat_list = [W_hat for _ in range(T)]
 V_hat_list = [V_hat for _ in range(T)]
 
-noise_factors, avg_nom, avg_rob = analyze_noise_sensitivity(
-    T=T,
-    A=A,
-    B=B,
-    C=C,
-    mu=mu,
-    K_list=K_list,
-    L_list=L_list,
-    K_list_rob=K_list,
-    L_list_rob=L_rob,
-    X0_hat=X0_hat,
-    W_hat_list=W_hat_list,
-    V_hat_list=V_hat_list,
-    initial_point=initial_point,
-    Q=Q,
-    R=R,
-    noise_factors=np.linspace(0, 1.25, 11),
-    N_runs=25,
-    rho_v=sdp_params["rho_v"]
-)
+# noise_factors, avg_nom, avg_rob = analyze_noise_sensitivity(
+#     T=T,
+#     A=A,
+#     B=B,
+#     C=C,
+#     mu=mu,
+#     K_list=K_list,
+#     L_list=L_list,
+#     K_list_rob=K_list,
+#     L_list_rob=L_rob,
+#     X0_hat=X0_hat,
+#     W_hat_list=W_hat_list,
+#     V_hat_list=V_hat_list,
+#     initial_point=initial_point,
+#     Q=Q,
+#     R=R,
+#     noise_factors=np.linspace(0, 1.25, 11),
+#     N_runs=25,
+#     rho_v=sdp_params["rho_v"]
+# )
 
 
 
