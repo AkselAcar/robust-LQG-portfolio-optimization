@@ -112,11 +112,12 @@ def solve_sdp(A, B, C, X0_hat, W_hat, V_hat, dt, T, rho_x0=1.0, rho_w=1.0, rho_v
     problem = cp.Problem(objective, constraints)
     problem.solve(solver=solver)
 
+
     # Return first (initial) robustified covariances
     return {
         "status": problem.status,
         "optimal_value": problem.value,
         "X0": X0.value,
-        "W0": [W.value for W in W_list],
-        "V0": [V.value for V in V_list]
+        "W_list": [W.value for W in W_list],
+        "V_list": [V.value for V in V_list]
     }

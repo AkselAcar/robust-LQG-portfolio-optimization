@@ -36,6 +36,9 @@ V_hat = sigma_v**2 * np.eye(n)       # Measurement noise covariance (p x p)
 Q = 4 * np.eye(n)  # State cost
 R = 2 * np.eye(m)  # Control cost
 
+# --- Convert scalar covariances to time-varying lists ---
+W_hat_list = [W_hat for _ in range(T)]  # Create list of identical W_hat matrices
+V_hat_list = [V_hat for _ in range(T)]  # Create list of identical V_hat matrices
 
 # --- SDP Parameters ---
 sdp_params = {
@@ -60,29 +63,30 @@ if should_recompute_sdp(sdp_params, SDP_FILENAME):
     print("Parameters changed or file missing. Computing new SDP solution...")
     sdp_result = compute_and_save_sdp_results(sdp_params, SDP_FILENAME)
     X0_robust = sdp_result["X0"]
-    W0_robust = sdp_result["W0"]
-    V0_robust = sdp_result["V0"]
+    W_list_robust = sdp_result["W_list"]  # Make sure this matches your SDP return keys
+    V_list_robust = sdp_result["V_list"]  # Make sure this matches your SDP return keys
 else:
     print("Loading existing SDP solution...")
     saved_data = load_sdp_results(SDP_FILENAME)
     X0_robust = saved_data["X0_robust"]
-    W0_robust = saved_data["W0_robust"]
-    V0_robust = saved_data["V0_robust"]
+    W_list_robust = saved_data["W_list_robust"]  
+    V_list_robust = saved_data["V_list_robust"]  
     print(f"Loaded SDP solution computed with parameters: {saved_data['params']}")
 
-# print("X0_hat eigenvalues:", np.linalg.eigvals(X0_hat))
-# print("W_hat eigenvalues:", np.linalg.eigvals(W_hat))
-# print("V_hat eigenvalues:", np.linalg.eigvals(V_hat))
+print("W_list_robust: ", W_list_robust)
+print("V_list_robust: ", V_list_robust) 
 
 # --- Compute Nominal and Robust Gains ---
 K_list = compute_finite_horizon_lqr_gains(A, B, Q, R, T=T)
-L_list = finite_horizon_kalman_gains(A, C, W_hat, V_hat, X0_hat, T)
-L_rob = finite_horizon_kalman_gains(A, C, W0_robust, V0_robust, X0_robust, T)
+
+# FIX: Use time-varying lists for both nominal and robust cases
+L_list = finite_horizon_kalman_gains(A, C, W_hat_list, V_hat_list, X0_hat, T)  # Use lists!
+L_rob = finite_horizon_kalman_gains(A, C, W_list_robust, V_list_robust, X0_robust, T)
 
 # --- Simulation Parameters ---
 noise_factor = 0.95
-W_real =  W0_robust
-V_real = [noise_factor * V for V in V0_robust]
+W_real = W_list_robust
+V_real = [noise_factor * V for V in V_list_robust]
 initial_point = 0.80 * mu
 N_runs = 100
 
@@ -108,6 +112,7 @@ print(f"Robust Controller Average Cost: {avg_cost_rob}")
 print(f"Robustness Benefit: {avg_cost_nom - avg_cost_rob}")
 
 # --- Noise Sensitivity Analysis ---
+# These are already created above, but keeping for consistency
 W_hat_list = [W_hat for _ in range(T)]
 V_hat_list = [V_hat for _ in range(T)]
 
@@ -131,8 +136,3 @@ V_hat_list = [V_hat for _ in range(T)]
 #     N_runs=25,
 #     rho_v=sdp_params["rho_v"]
 # )
-
-
-
-
-

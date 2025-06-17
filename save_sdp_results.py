@@ -112,8 +112,8 @@ def compute_and_save_sdp_results(params, filename="sdp_results.npz"):
         filename,
         params=params_with_hash,
         X0_robust=sdp_result["X0"],
-        W0_robust=sdp_result["W0"],
-        V0_robust=sdp_result["V0"],
+        W0_robust=sdp_result["W_list"],
+        V0_robust=sdp_result["V_list"],
         status=sdp_result["status"],
         optimal_value=sdp_result["optimal_value"]
     )
@@ -126,8 +126,8 @@ def load_sdp_results(filename="sdp_results.npz"):
     loaded = {
         "params": data["params"].item(),
         "X0_robust": data["X0_robust"],
-        "W0_robust": data["W0_robust"],
-        "V0_robust": data["V0_robust"],
+        "W_list_robust": data["W_list_robust"],
+        "V_list_robust": data["V_list_robust"],
         "status": data["status"].item(),
         "optimal_value": data["optimal_value"].item()
     }
