@@ -14,17 +14,17 @@ dt = 1.0   # Time step
 T = int(time_horizon / dt)  # Number of steps 
 
 # System dimensions
-n = 3  # Number of states, to chnage if needed !!
+n = 3 # Number of states, to chnage if needed !!
 m = 1  # Number of control inputs
 
 # --- System Matrices ---
-theta = np.diag([0.1,0.1,0.1])        # mean reversion coefficient for each state, to adapt if needed !!
+theta = np.diag([0.1, 0.05, 0.2])        # mean reversion coefficient for each state, to adapt if needed !!
 A = np.eye(n) - theta * dt     # Dynamics matrix
 B = -dt * np.ones((n, m))      # Control input matrix
 C = np.eye(n)                  # Measurement matrix
 
 # --- Initial State and Noise Covariances ---
-mu = np.array([[130.0],[120.0],[140.0]])             # To adapt if needed !! Multiple dimensions possible !
+mu = np.array([[130.0], [150.0], [160.0]])             # To adapt if needed !! Multiple dimensions possible !
 sigma_x0 = 2.0                       # Initial state uncertainty
 X0_hat = sigma_x0**2 * np.eye(n)     # Initial state covariance (n x n)
 sigma_w = 2.0                        # Process noise intensity
@@ -33,8 +33,8 @@ sigma_v = 2.0                        # Measurement noise intensity
 V_hat = sigma_v**2 * np.eye(n)       # Measurement noise covariance (p x p)
 
 # --- Cost Matrices ---
-Q = 4 * np.eye(n)  # State cost
-R = 2 * np.eye(m)  # Control cost
+Q = 2 * np.eye(n)  # State cost
+R = 1 * np.eye(m)  # Control cost
 
 # --- Convert scalar covariances to time-varying lists ---
 W_hat_list = [W_hat for _ in range(T)]  # Create list of identical W_hat matrices
@@ -50,9 +50,9 @@ sdp_params = {
     "V_hat": V_hat,
     "dt": dt,
     "T": T,
-    "rho_x0": 0.0,
-    "rho_w": 0.0,
-    "rho_v": 10.0
+    "rho_x0": 16.0,
+    "rho_w": 16.0,
+    "rho_v": 16.0
 }
 
 # --- Compute or load SDP results ---
@@ -87,7 +87,8 @@ L_rob = finite_horizon_kalman_gains(A, C, W_list_robust, V_list_robust, X0_robus
 noise_factor = 0.95
 W_real = W_list_robust
 V_real = [noise_factor * V for V in V_list_robust]
-initial_point = 0.80 * mu
+#initial point with noise
+initial_point = np.random.multivariate_normal(mu.flatten(), X0_hat).reshape(-1, 1)  # Initial state with noise
 N_runs = 100
 
 # --- Run Simulations and Plot Results ---
@@ -116,23 +117,25 @@ print(f"Robustness Benefit: {avg_cost_nom - avg_cost_rob}")
 W_hat_list = [W_hat for _ in range(T)]
 V_hat_list = [V_hat for _ in range(T)]
 
-# noise_factors, avg_nom, avg_rob = analyze_noise_sensitivity(
-#     T=T,
-#     A=A,
-#     B=B,
-#     C=C,
-#     mu=mu,
-#     K_list=K_list,
-#     L_list=L_list,
-#     K_list_rob=K_list,
-#     L_list_rob=L_rob,
-#     X0_hat=X0_hat,
-#     W_hat_list=W_hat_list,
-#     V_hat_list=V_hat_list,
-#     initial_point=initial_point,
-#     Q=Q,
-#     R=R,
-#     noise_factors=np.linspace(0, 1.25, 11),
-#     N_runs=25,
-#     rho_v=sdp_params["rho_v"]
-# )
+noise_factors, avg_nom, avg_rob = analyze_noise_sensitivity(
+    T=T,
+    A=A,
+    B=B,
+    C=C,
+    mu=mu,
+    K_list=K_list,
+    L_list=L_list,
+    K_list_rob=K_list,
+    L_list_rob=L_rob,
+    X0_hat=X0_hat,
+    W_hat_list=W_hat_list,
+    V_hat_list=V_hat_list,
+    W_list_robust=W_list_robust,
+    V_list_robust=V_list_robust,
+    initial_point=initial_point,
+    Q=Q,
+    R=R,
+    noise_factors=np.linspace(0, 1.2, 11),
+    N_runs=25,
+    rho_v=sdp_params["rho_v"]
+)

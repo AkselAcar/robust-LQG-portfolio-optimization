@@ -12,7 +12,7 @@ def simulate_lqg(T, A, B, C, mu, K_list, L_list, x0, W_list, V_list, Q, R):
     u = np.zeros((T, m))
     
     # Initialize cost accumulator
-    cost_vector = np.zeros(T)
+    cost_vector = np.zeros(T + 1)
     
     x[0] = x0.flatten()
     z[0] = (mu - x0).flatten()
@@ -35,7 +35,7 @@ def simulate_lqg(T, A, B, C, mu, K_list, L_list, x0, W_list, V_list, Q, R):
         cost_vector[k] += z[k].T @ Q @ z[k] + u[k].T @ R @ u[k]
 
     # Terminal state cost - z[-1]^T Q z[-1]
-    cost_vector[-1] += z[-1].T @ Q @ z[-1]
+    cost_vector[T] += z[T].T @ Q @ z[T]
 
     # Total cost is the sum of all costs at each timestep
     total_cost = np.sum(cost_vector)
@@ -54,7 +54,7 @@ def simulate_robust_lqg(T, A, B, C, mu, K_list, L_list, x0_rob, W_list, V_list, 
     u = np.zeros((T, m))
     
     # Initialize cost accumulator
-    cost_vector = np.zeros(T)
+    cost_vector = np.zeros(T + 1)
     
     x[0] = x0_rob.flatten()
     z[0] = (mu - x0_rob).flatten()
@@ -77,7 +77,7 @@ def simulate_robust_lqg(T, A, B, C, mu, K_list, L_list, x0_rob, W_list, V_list, 
         cost_vector[k] += z[k].T @ Q @ z[k] + u[k].T @ R @ u[k] # cost at each step, 
     
     # Terminal state cost
-    cost_vector[-1] += z[-1].T @ Q @ z[-1]
+    cost_vector[T] += z[T].T @ Q @ z[T]
 
     # Total cost is the sum of all costs at each timestep
     total_cost = np.sum(cost_vector)

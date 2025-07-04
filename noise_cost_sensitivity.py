@@ -7,7 +7,8 @@ def analyze_noise_sensitivity(
     T, A, B, C, mu, 
     K_list, L_list, 
     K_list_rob, L_list_rob, 
-    X0_hat, W_hat_list, V_hat_list,
+    X0_hat, W_hat_list, V_hat_list, 
+    W_list_robust, V_list_robust,
     initial_point, 
     Q, R,
     noise_factors,
@@ -29,9 +30,9 @@ def analyze_noise_sensitivity(
     
     for factor in noise_factors:
         # Scale noise covariances by current factor
-        W_test =  W_hat_list
-        #V_test = [np.array([[2 + (factor * 10)]])**2]*30 # * 30 for 30 
-        V_test = [(np.sqrt(V) + factor * rho_v)**2 for V in V_hat_list]
+        W_test =  W_hat_list 
+        V_test = (1-factor) * np.array(V_hat_list) + factor * np.array(V_list_robust)  # Scale V_hat_list by factor and add robust noise
+        #V_test = [(np.sqrt(V) + factor * rho_v)**2 for V in V_hat_list]
         print(f"V_test: {V_test}")
         
         costs_nom = []
@@ -71,6 +72,10 @@ def analyze_noise_sensitivity(
                  fmt='s-', color='tab:orange', ecolor='moccasin', elinewidth=3,
                  capsize=5, label='Robust LQG')
     
+    # Add vertical dashed line at x = 1
+    plt.axvline(x=1, color='gray', linestyle='--', linewidth=1.5, label='Nominal Noise Level')
+
+
     plt.xlabel('Noise Scaling Factor', fontsize=12)
     plt.ylabel('Total Cost', fontsize=12)
     plt.title('Controller Performance Under Different Noise Levels', fontsize=14)

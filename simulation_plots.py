@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from simulate_lqg import simulate_lqg, simulate_robust_lqg
+import os
 
 def simulate_and_plot_average_trajectories(
     T, A, B, C, mu, 
@@ -8,12 +9,17 @@ def simulate_and_plot_average_trajectories(
     K_list_rob, L_list_rob, 
     X0_robust, W_test, V_test, 
     initial_point, N_runs=10,
-    Q=None, R=None 
+    Q=None, R=None, 
+    save_dir="plots"  # New parameter for save directory
 ):
+    # Create save directory if it doesn't exist
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    
     n = A.shape[0]
     # Arrays to store cost trajectories
-    cost_nom_all = np.zeros((N_runs, T ))
-    cost_rob_all = np.zeros((N_runs, T ))
+    cost_nom_all = np.zeros((N_runs, T + 1 ))
+    cost_rob_all = np.zeros((N_runs, T + 1 ))
     
     # Arrays to store total costs per run
     total_cost_nom = np.zeros(N_runs)
@@ -56,7 +62,7 @@ def simulate_and_plot_average_trajectories(
     mean_total_cost_rob = total_cost_rob.mean()
 
     time_state = np.arange(T + 1)  # For state trajectories (0 to T)
-    time_cost = np.arange(T)        # For cost trajectories (0 to T-1)
+    time_cost = np.arange(T +1 )        # For cost trajectories (0 to T-1)
 
     # --- Plot 1: State Trajectories Comparison ---
     plt.figure(figsize=(10, 8))
@@ -101,18 +107,47 @@ def simulate_and_plot_average_trajectories(
     plt.grid(True)
     
     plt.tight_layout()
+    
+    # Save the first plot
+    plot1_filename = os.path.join(save_dir, "state_trajectories_and_costs.png")
+    plt.savefig(plot1_filename, dpi=300, bbox_inches='tight')
+    print(f"Saved: {plot1_filename}")
     plt.show()
+
+    # # --- Plot 2: Cumulative Costs ---
+    # plt.figure(figsize=(10, 5))
+    # plt.plot(time_cost, np.cumsum(mean_cost_nom_per_timestep), 'b--', label='Nominal Cumulative Cost')
+    # plt.plot(time_cost, np.cumsum(mean_cost_rob_per_timestep), 'r-', label='Robust Cumulative Cost')
+    # plt.title("Cumulative Cost Comparison")
+    # plt.xlabel("Time step")
+    # plt.ylabel("Cumulative Cost")
+    # plt.legend()
+    # plt.grid(True)
+    # plt.tight_layout()
 
     # --- Plot 2: Cumulative Costs ---
     plt.figure(figsize=(10, 5))
-    plt.plot(time_cost, np.cumsum(mean_cost_nom_per_timestep), 'b--', label='Nominal Cumulative Cost')
-    plt.plot(time_cost, np.cumsum(mean_cost_rob_per_timestep), 'r-', label='Robust Cumulative Cost')
+    # Compute cumulative costs
+    cumsum_nom = np.cumsum(mean_cost_nom_per_timestep)
+    cumsum_rob = np.cumsum(mean_cost_rob_per_timestep)
+    # Plot cumulative cost curves
+    plt.plot(time_cost, cumsum_nom, 'b--', label='Nominal Cumulative Cost')
+    plt.plot(time_cost, cumsum_rob, 'r-', label='Robust Cumulative Cost')
+    # Add markers to highlight last point
+    plt.plot(time_cost[-1], cumsum_nom[-1], 'b*', markersize=10, label='Final Nominal')
+    plt.plot(time_cost[-1], cumsum_rob[-1], 'r*', markersize=10, label='Final Robust')
+    # Styling
     plt.title("Cumulative Cost Comparison")
     plt.xlabel("Time step")
     plt.ylabel("Cumulative Cost")
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
+    
+    # Save the second plot
+    plot2_filename = os.path.join(save_dir, "cumulative_cost_comparison.png")
+    plt.savefig(plot2_filename, dpi=300, bbox_inches='tight')
+    print(f"Saved: {plot2_filename}")
     plt.show()
 
     # --- Plot 3: Total Cost Per Run ---
@@ -135,6 +170,11 @@ def simulate_and_plot_average_trajectories(
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
+    
+    # Save the third plot
+    plot3_filename = os.path.join(save_dir, "total_cost_per_run.png")
+    plt.savefig(plot3_filename, dpi=300, bbox_inches='tight')
+    print(f"Saved: {plot3_filename}")
     plt.show()
 
     # Print final cost comparison

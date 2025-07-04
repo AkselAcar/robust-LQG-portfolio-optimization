@@ -126,8 +126,8 @@ def load_sdp_results(filename="sdp_results.npz"):
     loaded = {
         "params": data["params"].item(),
         "X0_robust": data["X0_robust"],
-        "W_list_robust": data["W_list_robust"],
-        "V_list_robust": data["V_list_robust"],
+        "W_list_robust": data["W0_robust"],
+        "V_list_robust": data["V0_robust"],
         "status": data["status"].item(),
         "optimal_value": data["optimal_value"].item()
     }
