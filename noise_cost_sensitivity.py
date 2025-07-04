@@ -13,7 +13,6 @@ def analyze_noise_sensitivity(
     Q, R,
     noise_factors,
     N_runs,
-    rho_v # Robustness parameter for noise covariance
 ):
     """
     Analyze cost sensitivity to noise levels and plot results.
@@ -30,10 +29,8 @@ def analyze_noise_sensitivity(
     
     for factor in noise_factors:
         # Scale noise covariances by current factor
-        W_test =  W_hat_list 
+        W_test = (1-factor) * np.array(W_hat_list) + factor * np.array(W_list_robust)  # Scale W_hat_list by factor and add robust noise #W_hat_list
         V_test = (1-factor) * np.array(V_hat_list) + factor * np.array(V_list_robust)  # Scale V_hat_list by factor and add robust noise
-        #V_test = [(np.sqrt(V) + factor * rho_v)**2 for V in V_hat_list]
-        print(f"V_test: {V_test}")
         
         costs_nom = []
         costs_rob = []

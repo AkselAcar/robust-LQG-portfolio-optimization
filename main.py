@@ -1,12 +1,9 @@
 import numpy as np
 from LQG_controller import compute_finite_horizon_lqr_gains, finite_horizon_kalman_gains
-from simulate_lqg import simulate_lqg, simulate_robust_lqg
 from simulation_plots import simulate_and_plot_average_trajectories
 from noise_cost_sensitivity import analyze_noise_sensitivity
 from save_sdp_results import compute_and_save_sdp_results, load_sdp_results
 from save_sdp_results import compute_and_save_sdp_results, load_sdp_results, should_recompute_sdp
-
-import os
 
 # --- Parameters ---
 time_horizon = 30.0  # Total time 
@@ -14,17 +11,17 @@ dt = 1.0   # Time step
 T = int(time_horizon / dt)  # Number of steps 
 
 # System dimensions
-n = 3 # Number of states, to chnage if needed !!
+n = 2 # Number of states, to change for multiple dimensions !
 m = 1  # Number of control inputs
 
 # --- System Matrices ---
-theta = np.diag([0.1, 0.05, 0.2])        # mean reversion coefficient for each state, to adapt if needed !!
+theta = np.diag([0.1, 0.05])   # Mean reversion coefficient for each state, to change for multiple dimensions !
 A = np.eye(n) - theta * dt     # Dynamics matrix
 B = -dt * np.ones((n, m))      # Control input matrix
 C = np.eye(n)                  # Measurement matrix
 
 # --- Initial State and Noise Covariances ---
-mu = np.array([[130.0], [150.0], [160.0]])             # To adapt if needed !! Multiple dimensions possible !
+mu = np.array([[130.0], [150.0]])    # To change for multiple dimensions !
 sigma_x0 = 2.0                       # Initial state uncertainty
 X0_hat = sigma_x0**2 * np.eye(n)     # Initial state covariance (n x n)
 sigma_w = 2.0                        # Process noise intensity
@@ -50,9 +47,9 @@ sdp_params = {
     "V_hat": V_hat,
     "dt": dt,
     "T": T,
-    "rho_x0": 16.0,
-    "rho_w": 16.0,
-    "rho_v": 16.0
+    "rho_x0": 20.0,
+    "rho_w": 0.0,  # Process noise robustness parameter, if too big blows up the variance in simulations-> to investigate
+    "rho_v": 20.0
 }
 
 # --- Compute or load SDP results ---
@@ -78,18 +75,20 @@ print("V_list_robust: ", V_list_robust)
 
 # --- Compute Nominal and Robust Gains ---
 K_list = compute_finite_horizon_lqr_gains(A, B, Q, R, T=T)
-
-# FIX: Use time-varying lists for both nominal and robust cases
-L_list = finite_horizon_kalman_gains(A, C, W_hat_list, V_hat_list, X0_hat, T)  # Use lists!
+L_list = finite_horizon_kalman_gains(A, C, W_hat_list, V_hat_list, X0_hat, T)  
 L_rob = finite_horizon_kalman_gains(A, C, W_list_robust, V_list_robust, X0_robust, T)
 
+
+# --------------------------------------------- Simulation Setup ---------------------------------------------
+
+
 # --- Simulation Parameters ---
-noise_factor = 0.95
-W_real = W_list_robust
+noise_factor = 0.95 # Factor to scale process noise for robustness, to adapt as wanted
+W_real = [noise_factor * W for W in W_list_robust]         
 V_real = [noise_factor * V for V in V_list_robust]
 #initial point with noise
-initial_point = np.random.multivariate_normal(mu.flatten(), X0_hat).reshape(-1, 1)  # Initial state with noise
-N_runs = 100
+initial_point = np.random.multivariate_normal(mu.flatten(), X0_hat).reshape(-1, 1) 
+N_runs = 100 # Number of simulation runs
 
 # --- Run Simulations and Plot Results ---
 x_nom_avg, x_rob_avg, avg_cost_nom, avg_cost_rob = simulate_and_plot_average_trajectories(
@@ -105,12 +104,6 @@ x_nom_avg, x_rob_avg, avg_cost_nom, avg_cost_rob = simulate_and_plot_average_tra
     Q=Q,
     R=R
 )
-
-# Print final cost comparison
-print(f"\n=== Final Results ===")
-print(f"Nominal Controller Average Cost: {avg_cost_nom}")
-print(f"Robust Controller Average Cost: {avg_cost_rob}")
-print(f"Robustness Benefit: {avg_cost_nom - avg_cost_rob}")
 
 # --- Noise Sensitivity Analysis ---
 # These are already created above, but keeping for consistency
@@ -137,5 +130,4 @@ noise_factors, avg_nom, avg_rob = analyze_noise_sensitivity(
     R=R,
     noise_factors=np.linspace(0, 1.2, 11),
     N_runs=25,
-    rho_v=sdp_params["rho_v"]
 )

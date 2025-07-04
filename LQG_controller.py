@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.linalg import solve_discrete_are
 
 def compute_finite_horizon_lqr_gains(A, B, Q, R, T):
     """
@@ -43,15 +42,12 @@ def finite_horizon_kalman_gains(A, C, W_list, V_list, Sigma0, T):
         W = W_list[k] if k < len(W_list) else W_list[-1] # Not necessary but for safety, if W_list is shorter than T use the last element
         V = V_list[k] if k < len(V_list) else V_list[-1]
         
-        print(f"printing matrices of finite_horizon_kalman_gains at step {k}:")
         # Compute Kalman gain
         S = C @ Sigma @ C.T + V
-        print(f"Step {k}: V = {V}, Sigma = {Sigma}, C = {C}, S = {S}")
         L = A @ Sigma @ C.T @ np.linalg.inv(S)
         L_list.append(L)
         
         # Update covariance
         Sigma = A @ Sigma @ A.T + W - A @ Sigma @ C.T @ np.linalg.inv(S) @ C @ Sigma @ A.T
-        print(f"Step {k}: A = {A}, W = {W}, S = {S}, L = {L}, Sigma = {Sigma}\n")
-
+        
     return L_list

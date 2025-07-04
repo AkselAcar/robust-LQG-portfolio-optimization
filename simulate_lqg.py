@@ -74,7 +74,7 @@ def simulate_robust_lqg(T, A, B, C, mu, K_list, L_list, x0_rob, W_list, V_list, 
         z_hat[k + 1] = z_pred + L @ (y_k - C @ z_pred).flatten()
         
         # Cost at each timestep
-        cost_vector[k] += z[k].T @ Q @ z[k] + u[k].T @ R @ u[k] # cost at each step, 
+        cost_vector[k] += z[k].T @ Q @ z[k] + u[k].T @ R @ u[k]  
     
     # Terminal state cost
     cost_vector[T] += z[T].T @ Q @ z[T]

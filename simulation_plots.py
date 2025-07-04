@@ -10,7 +10,7 @@ def simulate_and_plot_average_trajectories(
     X0_robust, W_test, V_test, 
     initial_point, N_runs=10,
     Q=None, R=None, 
-    save_dir="plots"  # New parameter for save directory
+    save_dir="plots"  # Parameter for save directory
 ):
     # Create save directory if it doesn't exist
     if not os.path.exists(save_dir):
@@ -30,7 +30,7 @@ def simulate_and_plot_average_trajectories(
     x_rob_all = np.zeros((N_runs, T + 1, n))
 
     for i in range(N_runs):
-        x0 = np.random.multivariate_normal(initial_point.flatten(), X0_robust).reshape(-1, 1)
+        x0 = np.random.multivariate_normal(initial_point.flatten(), X0_robust).reshape(-1, 1) # reshape to (n, 1)
         
         # Simulate
         x_nom, u_nom, total_cost_nom_one_run, cost_nom_vector = simulate_lqg(T, A, B, C, mu, K_list, L_list, x0, W_test, V_test, Q, R)
@@ -62,7 +62,7 @@ def simulate_and_plot_average_trajectories(
     mean_total_cost_rob = total_cost_rob.mean()
 
     time_state = np.arange(T + 1)  # For state trajectories (0 to T)
-    time_cost = np.arange(T +1 )        # For cost trajectories (0 to T-1)
+    time_cost = np.arange(T + 1)   # For cost trajectories (0 to T-1)
 
     # --- Plot 1: State Trajectories Comparison ---
     plt.figure(figsize=(10, 8))
@@ -113,18 +113,7 @@ def simulate_and_plot_average_trajectories(
     plt.savefig(plot1_filename, dpi=300, bbox_inches='tight')
     print(f"Saved: {plot1_filename}")
     plt.show()
-
-    # # --- Plot 2: Cumulative Costs ---
-    # plt.figure(figsize=(10, 5))
-    # plt.plot(time_cost, np.cumsum(mean_cost_nom_per_timestep), 'b--', label='Nominal Cumulative Cost')
-    # plt.plot(time_cost, np.cumsum(mean_cost_rob_per_timestep), 'r-', label='Robust Cumulative Cost')
-    # plt.title("Cumulative Cost Comparison")
-    # plt.xlabel("Time step")
-    # plt.ylabel("Cumulative Cost")
-    # plt.legend()
-    # plt.grid(True)
-    # plt.tight_layout()
-
+    
     # --- Plot 2: Cumulative Costs ---
     plt.figure(figsize=(10, 5))
     # Compute cumulative costs
