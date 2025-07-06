@@ -51,3 +51,5 @@ def finite_horizon_kalman_gains(A, C, W_list, V_list, Sigma0, T):
         Sigma = A @ Sigma @ A.T + W - A @ Sigma @ C.T @ np.linalg.inv(S) @ C @ Sigma @ A.T
         
     return L_list
+
+

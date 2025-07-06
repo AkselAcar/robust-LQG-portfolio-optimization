@@ -11,22 +11,22 @@ dt = 1.0   # Time step
 T = int(time_horizon / dt)  # Number of steps 
 
 # System dimensions
-n = 2 # Number of states, to change for multiple dimensions !
+n = 1 # Number of states, to change for multiple dimensions !
 m = 1  # Number of control inputs
 
 # --- System Matrices ---
-theta = np.diag([0.1, 0.05])   # Mean reversion coefficient for each state, to change for multiple dimensions !
+theta = np.diag([0.1])   # Mean reversion coefficient for each state, to change for multiple dimensions !
 A = np.eye(n) - theta * dt     # Dynamics matrix
 B = -dt * np.ones((n, m))      # Control input matrix
 C = np.eye(n)                  # Measurement matrix
 
 # --- Initial State and Noise Covariances ---
-mu = np.array([[130.0], [150.0]])    # To change for multiple dimensions !
+mu = np.array([[130.0]])             # To change for multiple dimensions !
 sigma_x0 = 2.0                       # Initial state uncertainty
 X0_hat = sigma_x0**2 * np.eye(n)     # Initial state covariance (n x n)
 sigma_w = 2.0                        # Process noise intensity
 W_hat = sigma_w**2 * dt * np.eye(n)  # Process noise covariance (n x n)
-sigma_v = 2.0                        # Measurement noise intensity
+sigma_v = 2.0                       # Measurement noise intensity
 V_hat = sigma_v**2 * np.eye(n)       # Measurement noise covariance (p x p)
 
 # --- Cost Matrices ---
@@ -47,9 +47,9 @@ sdp_params = {
     "V_hat": V_hat,
     "dt": dt,
     "T": T,
-    "rho_x0": 20.0,
-    "rho_w": 0.0,  # Process noise robustness parameter, if too big blows up the variance in simulations-> to investigate
-    "rho_v": 20.0
+    "rho_x0": 30.0,
+    "rho_w": 30.0,  
+    "rho_v": 30.0
 }
 
 # --- Compute or load SDP results ---
