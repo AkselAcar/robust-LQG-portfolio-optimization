@@ -5,16 +5,17 @@
 **Supervisors:** Jakob Nylöf and Prof. Giancarlo Ferrari Trecate
 
 ---
-
 ## Overview
 
-This project implements a **robust Linear Quadratic Gaussian (LQG) controller** for portfolio optimization under uncertainty in both process and observation noise. The approach extends standard LQG control with distributional robustness via semi-definite programming (SDP).
+This project implements a **distributionally robust Linear Quadratic Gaussian (LQG) controller** for financial portfolio optimization under model uncertainty. The framework models financial assets using controlled Ornstein-Uhlenbeck processes, suitable for mean-reverting trading strategies. The approach addresses the limitations of traditional LQG controllers that assume known Gaussian noise statistics by incorporating Wasserstein ambiguity sets and semi-definite programming to handle distributional uncertainty in financial markets.
 
 ---
 
 ## Getting Started
 
-1. Ensure all required Python packages are installed (`numpy`, `matplotlib`, etc.).
+1. Ensure up to date Python verison and that all required Python packages are installed:
+- Python 3.7+
+- Required packages: `numpy`, `matplotlib`, `cvxpy`, `scipy`
 2. Run the `main.py` script. This will:
    - Compute LQG and robust controller gains,
    - Simulate trajectories,
@@ -68,7 +69,7 @@ All key settings are located near the top of `main.py`:
 
 ## Outputs
 
-Plots are saved to the `plots/` directory (if you want to run this code locally please don't forget to crerate a `plots/` directory):
+Plots are saved to the `plots/` directory (if you want to run this code locally please don't forget to create a `plots/` directory):
 
 - **State Trajectories** – Mean and standard deviation bands
 - **Instantaneous Cost** – Nominal vs. Robust
@@ -81,9 +82,8 @@ Plots are saved to the `plots/` directory (if you want to run this code locally 
 ##  Notes
 
 - The SDP is **solved offline** and cached unless parameters change.
-- For low-dimensional systems (1D or 2D), computation is fast. It can take longer for higher dimensions ! 
-- Tuning `rho_*` parameters impacts robustness-performance trade-off. Putting `rho_w` high makes the variance explode in the somulations which is something to investigate. 
-
+- For low-dimensional systems (1D or 2D), computation is fast. It can take longer for higher dimensions! 
+- Tuning `rho_*` parameters impacts robustness-performance trade-off. 
 ---
 
 
